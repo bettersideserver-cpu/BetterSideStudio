@@ -19,7 +19,7 @@
 
   var EMBED_BASE = "./services-section/";
   /** Bumped on every rebuild so browsers can never serve a stale embed from cache. */
-  var BUILD = "20260827k";
+  var BUILD = "20260827l";
   var MAX_WAIT_MS = 15000;
   /** Copy for the split lead block under the hero. Edit these three strings only. */
   var LEAD_COPY = {
@@ -128,21 +128,21 @@
     'button[aria-label^="Switch to"]:hover{border-color:var(--flame,var(--flare,#ff5a1f))!important}',
     /* the sliding pill — first span in both builds. Sized to exactly half the
        track so it sits behind one label instead of clipping through it. */
-    'button[aria-label^="Switch to"]>span:first-child{position:absolute!important;top:.1875rem!important;bottom:.1875rem!important;left:.1875rem!important;right:auto!important;width:calc(50% - .1875rem)!important;height:auto!important;margin:0!important;border-radius:999px!important;background:var(--flame,var(--flare,#ff5a1f))!important;transform:translateX(0)!important;transition:transform .34s cubic-bezier(.4,0,.2,1)!important;z-index:0!important;pointer-events:none!important}',
-    'html[data-theme=light] button[aria-label^="Switch to"]>span:first-child{transform:translateX(100%)!important}',
+    'button[aria-label^="Switch to"]>[data-bs-tgknob]{position:absolute!important;top:.1875rem!important;bottom:.1875rem!important;left:.1875rem!important;right:auto!important;width:calc(50% - .1875rem)!important;height:auto!important;margin:0!important;padding:0!important;border-radius:999px!important;background:var(--flame,var(--flare,#ff5a1f))!important;transform:translateX(0)!important;transition:transform .34s cubic-bezier(.4,0,.2,1)!important;z-index:0!important;pointer-events:none!important;font-size:0!important;color:transparent!important}',
+    'html[data-theme=light] button[aria-label^="Switch to"]>[data-bs-tgknob]{transform:translateX(100%)!important}',
     /* the two labels, each owning half the track and centred on the pill.
        padding-left cancels the trailing letter-spacing so the ink is optically
        centred, not just box-centred. */
-    'button[aria-label^="Switch to"]>span:not(:first-child){position:relative!important;z-index:1!important;flex:1 1 50%!important;display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;padding:0 0 0 .1em!important;margin:0!important;font-size:.5625rem!important;font-weight:600!important;line-height:1!important;letter-spacing:.1em!important;text-transform:uppercase!important;transition:color .25s ease!important}',
+    'button[aria-label^="Switch to"]>[data-bs-tglabel]{position:relative!important;z-index:1!important;flex:1 1 50%!important;display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;padding:0 0 0 .1em!important;margin:0!important;font-size:.5625rem!important;font-weight:600!important;line-height:1!important;letter-spacing:.1em!important;text-transform:uppercase!important;transition:color .25s ease!important}',
     /* active label reads on the flame pill, inactive one recedes */
-    'button[aria-label^="Switch to"]>span:nth-child(2){color:#141414!important}',
-    'button[aria-label^="Switch to"]>span:nth-child(3){color:var(--ash-dim,var(--bone-dim,rgba(244,241,234,.5)))!important}',
-    'html[data-theme=light] button[aria-label^="Switch to"]>span:nth-child(2){color:var(--ash-dim,var(--bone-dim,rgba(20,20,20,.5)))!important}',
-    'html[data-theme=light] button[aria-label^="Switch to"]>span:nth-child(3){color:#141414!important}',
+    'button[aria-label^="Switch to"]>[data-bs-tglabel=dk]{color:#141414!important}',
+    'button[aria-label^="Switch to"]>[data-bs-tglabel=lt]{color:var(--ash-dim,var(--bone-dim,rgba(244,241,234,.5)))!important}',
+    'html[data-theme=light] button[aria-label^="Switch to"]>[data-bs-tglabel=dk]{color:var(--ash-dim,var(--bone-dim,rgba(20,20,20,.5)))!important}',
+    'html[data-theme=light] button[aria-label^="Switch to"]>[data-bs-tglabel=lt]{color:#141414!important}',
     /* the embed build hides its switch below md — show it everywhere */
     'button[aria-label^="Switch to"].hidden{display:inline-flex!important}',
-    /* the embed build renders a "/" separator between its labels — drop it */
-    'button[aria-label^="Switch to"]>span:nth-child(4){display:none!important}',
+    /* anything else inside the switch (the embed build's "/" separator) is dropped */
+    'button[aria-label^="Switch to"]>*:not([data-bs-tgknob]):not([data-bs-tglabel]){display:none!important}',
 
     /* ---------- normal OS cursor everywhere -------------------------------- */
     /* The build shipped a custom cursor follower (a dot that swelled into an
@@ -182,6 +182,50 @@
     "html.bs-svc-lock,body.bs-svc-lock{overflow:hidden!important}",
   ].join("\n");
 
+  /**
+   * The two builds ship two different switch markups: the home bundle renders
+   * [knob, "Dk", "Lt"] while the embed bundle (About / Blog) renders
+   * ["DK", "/", "LT"] with no knob at all. Tag the parts here so one stylesheet
+   * can draw the same pill on every page instead of guessing at child order.
+   */
+  function patchToggle(doc) {
+    if (!doc) return;
+    var btns = doc.querySelectorAll('button[aria-label^="Switch to"]');
+    for (var i = 0; i < btns.length; i++) {
+      var btn = btns[i];
+      var kids = btn.children;
+      var knob = null;
+      var j;
+      /* an existing empty span is the home build's knob; reuse it */
+      for (j = 0; j < kids.length; j++) {
+        if (kids[j].hasAttribute("data-bs-tgknob")) { knob = kids[j]; break; }
+      }
+      if (!knob) {
+        for (j = 0; j < kids.length; j++) {
+          if (!(kids[j].textContent || "").trim()) { knob = kids[j]; break; }
+        }
+      }
+      if (!knob) {
+        knob = doc.createElement("span");
+        knob.setAttribute("aria-hidden", "true");
+        btn.insertBefore(knob, btn.firstChild);
+      }
+      if (!knob.hasAttribute("data-bs-tgknob")) knob.setAttribute("data-bs-tgknob", "1");
+
+      for (j = 0; j < kids.length; j++) {
+        var el = kids[j];
+        if (el === knob) continue;
+        var t = (el.textContent || "").trim().toLowerCase();
+        var want = t === "dk" || t === "dark" ? "dk" : (t === "lt" || t === "light" ? "lt" : null);
+        if (want) {
+          if (el.getAttribute("data-bs-tglabel") !== want) el.setAttribute("data-bs-tglabel", want);
+        } else if (el.hasAttribute("data-bs-tglabel")) {
+          el.removeAttribute("data-bs-tglabel");
+        }
+      }
+    }
+  }
+
   /** Mirror the switch design into every same-origin iframe (embeds, modal). */
   function styleFrame(frame) {
     try {
@@ -194,6 +238,7 @@
         tag.textContent = TOGGLE_CSS;
         doc.head.appendChild(tag);
       }
+      patchToggle(doc);
     } catch (e) {
       /* cross-origin or not ready — the next sync retries */
     }
@@ -1301,6 +1346,7 @@
     if (!didRibbon) didRibbon = patchRibbon();
     if (!didNav) didNav = patchNav();
     patchLinks();
+    patchToggle(document);
     syncTheme();
     styleFrames();
 
