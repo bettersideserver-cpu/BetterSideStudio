@@ -38,6 +38,68 @@ WHAT CHANGED ON THE SITE
    It uses the same storage your site already uses (sn-theme), so the theme is
    shared: flip it anywhere and every page — including the new embedded sections —
    follows, and it survives a reload.
+9. Hero headline — the character-scramble on the cycling word is gone. The word
+   now swaps in one clean masked slide-up reveal (blur + rise, 0.8s) and holds
+   for 3.4 seconds, so it reads as type instead of noise.
+10. Services (desktop) — the pinned sideways scroll no longer stalls or jumps
+   backwards. Wheel and touch gestures made over the section are now passed
+   through to the page, and browser scroll-anchoring is switched off on the
+   pinned wrapper, so the section advances 0 -> 100% and then releases the page
+   to the next section normally.
+11. Theme switch — one single pill design used identically on every page and
+   inside every embedded section, including About, Blog, Studio and the enquiry
+   form. It is a proper two-segment control: the flame pill fills exactly half
+   the track and sits behind the active label (DK or LT), which reads dark on
+   orange, while the inactive label recedes. It is also visible on mobile now.
+12. Custom cursor removed. The build shipped its own cursor (a white dot that
+   swelled into a big orange bubble with a word like "View" or "Light" in it).
+   It is gone — you now get the normal system cursor everywhere: an arrow on
+   plain areas, a hand on links and buttons, a text caret in form fields.
+13. Work section on phones — "Ten projects, one standard." is no longer ten
+   images stacked vertically. It is a swipeable horizontal deck: one card at a
+   time, the off-centre cards dim back, with a "04 / 09" counter and a progress
+   bar underneath.
+14. Fixed: that phone deck was leaking onto desktop. Its CSS was not limited to
+   small screens, so above 768px it overrode the build's own "hidden on
+   desktop" rule and drew the same projects a second time as two huge cards
+   below the "hover to expand" strip. The deck styles now apply only below
+   768px. Desktop shows the original strip and nothing else; phones are
+   unchanged. No image or video path was touched.
+15. The lead block under the hero is now split into two panes: the film plays on
+   the left, and on the right sit the project name, its location/meta line, a
+   short description and an "EXPLORE PROJECT" button. On phones the two panes
+   stack (film on top, copy under it). Project name and meta are read live from
+   your own build, so editing them in the bundle still updates this block.
+   TO EDIT THE DESCRIPTION OR THE BUTTON: open services-section/inject.js and
+   change the LEAD_COPY block near the top of the file (line 23) — "desc" is the
+   paragraph, "cta" the button label, "href" where the button goes (currently
+   #work). Nothing else needs touching. The video path is unchanged:
+   services-section/videos/work-lead.mp4
+16. Services section — three capability cards now open their live work when
+   clicked (the other two are untouched and behave exactly as before):
+     SALES EXPERIENCE      -> three websites: mdbthelutyens.in,
+                              cminfiniaimmersive.com, and the Ananta Street
+                              GitHub page. They open in a new tab.
+     3D ANIMATIONS         -> two walkthrough players. Both clips are
+                              PLACEHOLDERS — replace the files, keep the names:
+                                services-section/videos/walkthrough-01.mp4
+                                services-section/videos/walkthrough-02.mp4
+     3D INTERACTIVE WEBSITES -> gillcomeraqui.com
+   The panel opens inside the services section; close it with the CLOSE button,
+   the Esc key, or by clicking the dark area around it. The cards' own "VIEW
+   WORK" label now reads "VIEW LIVE WORK" / "VIEW WALKTHROUGHS" so it is clear
+   they are clickable.
+   TO EDIT THE LINKS OR ADD MORE: open services-section/inject.js and change the
+   SERVICE_DETAIL block near the top of the file (around line 33). Each entry is
+   just a label plus a url (or a video file name).
+17. Fixed the scroll stutter in the services section. While the section is
+   pinned, wheel movement over it is forwarded to the page; it used to be
+   applied on every single wheel event, which fought the browser's own scroll
+   animation and produced uneven jumps (a 10px step next to a 400px step).
+   Deltas are now collected and applied once per frame, so the sideways travel
+   is even: measured in equal 220px steps with the rail advancing ~124px each
+   step, start to finish. Scrolling is also suspended while a card panel is
+   open, so the panel scrolls instead of the page.
 
 
 SWAPPING IN YOUR REAL VIDEOS
