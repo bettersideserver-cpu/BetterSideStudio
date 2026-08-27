@@ -741,7 +741,7 @@
     var video = leadVideo(img.getAttribute("src") || "");
     media.appendChild(video);
     var label = document.createElement("span");
-    label.className = "bs-lead-tag";
+   
     label.textContent = tag;
     media.appendChild(label);
 
