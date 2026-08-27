@@ -19,7 +19,7 @@
 
   var EMBED_BASE = "./services-section/";
   /** Bumped on every rebuild so browsers can never serve a stale embed from cache. */
-  var BUILD = "20260827l";
+  var BUILD = "20260827m";
   var MAX_WAIT_MS = 15000;
   /** Copy for the split lead block under the hero. Edit these three strings only. */
   var LEAD_COPY = {
@@ -991,8 +991,46 @@
 
   /* ---------------------------------------------------------------- nav links */
 
+  /**
+   * Every place the site lists its pages: the desktop header nav, the mobile
+   * menu panel (a plain div, not a <nav>) and the footer link list. About and
+   * Blog have to appear in all of them, or they are invisible on phones.
+   */
+  function navContainers() {
+    var out = [];
+
+    function push(el) {
+      if (!el || out.indexOf(el) !== -1) return;
+      /* only containers that really are a page list */
+      var links = el.querySelectorAll("a");
+      var hasStudio = false;
+      var hasOther = false;
+      for (var i = 0; i < links.length; i++) {
+        var t = (links[i].textContent || "").trim();
+        if (/^studio$/i.test(t)) hasStudio = true;
+        else if (/^(work|services|ecosystem)$/i.test(t)) hasOther = true;
+      }
+      if (hasStudio && hasOther) out.push(el);
+    }
+
+    var navs = document.querySelectorAll("header nav");
+    for (var i = 0; i < navs.length; i++) push(navs[i]);
+
+    /* the mobile menu panel and the footer list hold their Studio link in a
+       div or a <li>, so climb one level when the anchor is wrapped */
+    var anchors = document.querySelectorAll("header a, footer a");
+    for (var j = 0; j < anchors.length; j++) {
+      var t = (anchors[j].textContent || "").trim();
+      if (!/^studio$/i.test(t)) continue;
+      var holder = anchors[j].parentNode;
+      if (holder && holder.children.length < 2 && holder.parentNode) holder = holder.parentNode;
+      push(holder);
+    }
+    return out;
+  }
+
   function patchNav() {
-    var lists = document.querySelectorAll("header nav");
+    var lists = navContainers();
     var added = false;
     for (var i = 0; i < lists.length; i++) {
       var nav = lists[i];
@@ -1002,7 +1040,7 @@
         nav.removeAttribute("data-bs-nav");
       }
       // Pages rendered by the new build already carry these links.
-      if (nav.querySelector('a[href*="about/"]')) {
+      if (nav.querySelector('a[href*="about"]')) {
         nav.setAttribute("data-bs-nav", "done");
         continue;
       }
