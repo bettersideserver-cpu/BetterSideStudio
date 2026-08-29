@@ -19,7 +19,7 @@
 
   var EMBED_BASE = "./services-section/";
   /** Bumped on every rebuild so browsers can never serve a stale embed from cache. */
-  var BUILD = "20260827m";
+  var BUILD = "20260829e";
   var MAX_WAIT_MS = 15000;
   /** Copy for the split lead block under the hero. Edit these three strings only. */
   var LEAD_COPY = {
@@ -28,6 +28,12 @@
     cta: "EXPLORE PROJECT",
     href: "https://www.cosmosquesnel.ca/"
   };
+
+  /**
+   * The project called out beside the lead film. Listed once here and reused in
+   * both the "sales experience" card and the EXPLORE PROJECT panel.
+   */
+  var COSMOS_LINK = { label: "Cosmos Quesnel", url: "https://www.cosmosquesnel.ca/" };
 
   /**
    * What opens when a capability card in the services section is clicked.
@@ -42,7 +48,8 @@
       items: [
         { label: "MDB The Lutyens", url: "https://www.mdbthelutyens.in" },
         { label: "CM Infinia Immersive", url: "https://www.cminfiniaimmersive.com" },
-        { label: "Ananta Street", url: "https://bettersideserver-cpu.github.io/AnantaStreet/" }
+        { label: "Ananta Street", url: "https://bettersideserver-cpu.github.io/AnantaStreet/" },
+        COSMOS_LINK
       ]
     },
     "3d animations": {
@@ -282,6 +289,21 @@
       ".bs-lead-cta:hover{background:var(--flame,#e9622b);color:#141414}",
       ".bs-lead-cta i{font-style:normal;transition:transform .25s ease}",
       ".bs-lead-cta:hover i{transform:translateX(4px)}",
+      ".bs-lead-cta{cursor:pointer;background:transparent;font-family:inherit}",
+      /* 15b — EXPLORE PROJECT panel: the live sales experiences, Cosmos first */
+      ".bs-leadlinks{position:fixed;inset:0;z-index:2147483200;display:flex;align-items:center;justify-content:center;padding:clamp(1rem,4vw,2.5rem);background:rgba(6,6,6,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .28s ease}",
+      ".bs-leadlinks.is-open{opacity:1}",
+      ".bs-leadlinks-panel{position:relative;width:100%;max-width:40rem;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column;gap:.9rem;padding:clamp(1.5rem,3vw,2.5rem);background:var(--ink-2,#141414);border:1px solid var(--hair,#262626);border-radius:1rem;transform:translateY(12px);transition:transform .3s ease}",
+      ".bs-leadlinks.is-open .bs-leadlinks-panel{transform:none}",
+      ".bs-leadlinks-close{align-self:flex-end;padding:.4rem .75rem;border:1px solid var(--hair,#262626);border-radius:999px;background:transparent;color:var(--ash,#a3a3a3);font-family:inherit;font-size:.5625rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:color .2s ease,border-color .2s ease}",
+      ".bs-leadlinks-close:hover{color:var(--flame,#e9622b);border-color:var(--flame,#e9622b)}",
+      ".bs-leadlinks-eyebrow{font-size:.625rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--flame,#e9622b)}",
+      ".bs-leadlinks-title{margin:0 0 .4rem;font-size:clamp(1.4rem,2.4vw,2rem);line-height:1.05;letter-spacing:-.02em;text-transform:uppercase;color:var(--bone,#fff)}",
+      ".bs-leadlink{display:flex;flex-direction:column;gap:.3rem;padding:1rem 1.1rem;border:1px solid var(--hair,#262626);border-radius:.75rem;text-decoration:none;transition:border-color .25s ease,background .25s ease,transform .25s ease}",
+      ".bs-leadlink:hover{border-color:var(--flame,#e9622b);background:rgba(233,98,43,.06);transform:translateY(-2px)}",
+      ".bs-leadlink b{font-size:.9375rem;font-weight:600;letter-spacing:.01em;color:var(--bone,#fff)}",
+      ".bs-leadlink span{font-size:.75rem;color:var(--ash-dim,#6b6b6b);word-break:break-all}",
+      ".bs-leadlink em{font-style:normal;font-size:.5625rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--flame,#e9622b)}",
       ".bs-railmeta{display:flex;align-items:center;gap:.75rem;padding:0 0 clamp(3rem,8vh,6rem)}",
       ".bs-railmeta .bs-railcount{font-size:.6875rem;letter-spacing:.22em;text-transform:uppercase;color:var(--flame,#ff5a1f);white-space:nowrap}",
       ".bs-railmeta .bs-railbar{position:relative;flex:1 1 auto;height:1px;background:var(--hair,rgba(255,255,255,.16))}",
@@ -300,6 +322,73 @@
       ".bs-modal-lock{overflow:hidden!important}",
       /* 5 — the "Made with Runable" badge baked into their compiled bundle */
       "[data-runable-badge]{display:none!important}",
+      /* 19b — the three markets, spelled out in the hero copy instead of on the map */
+      "[data-bs-mapkey]{display:flex;align-items:center;flex-wrap:wrap;gap:.55rem 1.1rem;margin:1.35rem 0 0;font-size:.625rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--ash-dim,#6b6b6b)}",
+      "[data-bs-mapkey] .bs-mk-lead{color:var(--ash-dim,#6b6b6b);opacity:.75}",
+      ".bs-mk-item{display:inline-flex;align-items:center;gap:.5rem;color:var(--bone,#f4f1ea);opacity:0;transform:translateY(6px);animation:bs-mk-in .7s cubic-bezier(.2,.9,.24,1.2) forwards}",
+      ".bs-mk-item.k1{animation-delay:.5s}",
+      ".bs-mk-item.k2{animation-delay:1s}",
+      ".bs-mk-item.k3{animation-delay:1.5s}",
+      "@keyframes bs-mk-in{to{opacity:1;transform:none}}",
+      ".bs-mk-item i{position:relative;width:6px;height:6px;border-radius:50%;background:var(--flame,#e9622b);flex:0 0 auto}",
+      ".bs-mk-item i:after{content:\"\";position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--flame,#e9622b);animation:bs-mk-ping 2.6s ease-out infinite}",
+      ".bs-mk-item.k2 i:after{animation-delay:.5s}",
+      ".bs-mk-item.k3 i:after{animation-delay:1s}",
+      "@keyframes bs-mk-ping{0%{transform:scale(.5);opacity:.8}70%{transform:scale(2.1);opacity:0}100%{transform:scale(2.1);opacity:0}}",
+      "@media(max-width:767px){[data-bs-mapkey]{display:none}}",
+      /* 19 — hero world map: dot-matrix earth, India / USA / Canada popping up */
+      "#top{position:relative}",
+      "#top>.shell{position:relative;z-index:2}",
+      "[data-bs-heromap]{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;opacity:0;transition:opacity 1.1s ease}",
+      "[data-bs-heromap].is-in{opacity:1}",
+      ".bs-hm-frame{position:absolute;left:50%;top:34%;width:min(1180px,98%);aspect-ratio:1200/600;transform:translate(-50%,-50%) translate3d(var(--hmx,0px),var(--hmy,0px),0);transition:transform .9s cubic-bezier(.16,.84,.34,1);-webkit-mask-image:radial-gradient(88% 78% at 50% 34%,#000 0%,rgba(0,0,0,.42) 58%,transparent 84%);mask-image:radial-gradient(88% 78% at 50% 34%,#000 0%,rgba(0,0,0,.42) 58%,transparent 84%)}",
+      ".bs-hm-layer{position:absolute;inset:0;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-position:center;mask-position:center}",
+      ".bs-hm-dots{background:var(--ash-dim,#6b6b6b);opacity:.2;-webkit-mask-image:url('" + EMBED + "world-dots.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots.svg?v=" + BUILD + "')}",
+      "html[data-theme=light] .bs-hm-dots{opacity:.26}",
+      ".bs-hm-c{background:var(--flame,#e9622b);opacity:0;transform:scale(.86);transform-origin:var(--ox,50%) var(--oy,50%);animation:bs-hm-rise 1.1s cubic-bezier(.16,.9,.3,1.08) forwards,bs-hm-glow 5.4s ease-in-out infinite}",
+      ".bs-hm-ca{--ox:26.6%;--oy:20.7%;animation-delay:.45s,1.6s;-webkit-mask-image:url('" + EMBED + "world-dots-ca.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots-ca.svg?v=" + BUILD + "')}",
+      ".bs-hm-us{--ox:24.6%;--oy:32.6%;animation-delay:.95s,2.1s;-webkit-mask-image:url('" + EMBED + "world-dots-us.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots-us.svg?v=" + BUILD + "')}",
+      ".bs-hm-in{--ox:71.5%;--oy:42.9%;animation-delay:1.45s,2.6s;-webkit-mask-image:url('" + EMBED + "world-dots-in.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots-in.svg?v=" + BUILD + "')}",
+      "@keyframes bs-hm-rise{0%{opacity:0;transform:scale(.86)}60%{opacity:1}100%{opacity:.95;transform:scale(1)}}",
+      "@keyframes bs-hm-glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}",
+      ".bs-hm-pins{position:absolute;inset:0;width:100%;height:100%;overflow:visible}",
+      ".bs-hm-pin{opacity:0;animation:bs-hm-pop .9s cubic-bezier(.2,.9,.24,1.25) forwards}",
+      ".bs-hm-pin.p1{animation-delay:.8s}",
+      ".bs-hm-pin.p2{animation-delay:1.3s}",
+      ".bs-hm-pin.p3{animation-delay:1.8s}",
+      "@keyframes bs-hm-pop{0%{opacity:0;transform:translateY(14px) scale(.7)}70%{opacity:1}100%{opacity:1;transform:none}}",
+      ".bs-hm-ring{fill:none;stroke:var(--flame,#e9622b);stroke-width:1.6;transform-box:fill-box;transform-origin:center;animation:bs-hm-ping 2.6s ease-out infinite}",
+      ".bs-hm-pin.p2 .bs-hm-ring{animation-delay:.5s}",
+      ".bs-hm-pin.p3 .bs-hm-ring{animation-delay:1s}",
+      "@keyframes bs-hm-ping{0%{transform:scale(.5);opacity:.85}70%{transform:scale(2.6);opacity:0}100%{transform:scale(2.6);opacity:0}}",
+      ".bs-hm-core{fill:var(--flame,#e9622b)}",
+      ".bs-hm-stem{stroke:var(--flame,#e9622b);stroke-width:1.2;opacity:.7}",
+      ".bs-hm-label,.bs-hm-sub,.bs-hm-stem{display:none}",
+      ".bs-hm-label{fill:var(--bone,#f4f1ea);font-family:inherit;font-size:19px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase}",
+      ".bs-hm-sub{fill:var(--ash-dim,#8a8a8a);font-family:inherit;font-size:12px;font-weight:600;letter-spacing:2.4px}",
+      ".bs-hm-arc{fill:none;stroke:var(--flame,#e9622b);stroke-width:1.2;stroke-linecap:round;opacity:.32;stroke-dasharray:6 10;animation:bs-hm-flow 2.4s linear infinite}",
+      "@keyframes bs-hm-flow{to{stroke-dashoffset:-32}}",
+      ".bs-hm-arcwrap{opacity:0;animation:bs-hm-draw 1.4s ease forwards 2.2s}",
+      "@keyframes bs-hm-draw{to{opacity:1}}",
+      /* phones: coarser dot map + bigger type so nothing turns to mush */
+      "@media(max-width:767px){",
+      "  .bs-hm-frame{top:38%;width:132%;-webkit-mask-image:radial-gradient(120% 96% at 50% 46%,#000 40%,rgba(0,0,0,.5) 70%,transparent 95%);mask-image:radial-gradient(120% 96% at 50% 46%,#000 40%,rgba(0,0,0,.5) 70%,transparent 95%)}",
+      "  .bs-hm-dots{opacity:.4;-webkit-mask-image:url('" + EMBED + "world-dots-m.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots-m.svg?v=" + BUILD + "')}",
+      "  .bs-hm-ca{-webkit-mask-image:url('" + EMBED + "world-dots-ca-m.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots-ca-m.svg?v=" + BUILD + "')}",
+      "  .bs-hm-us{-webkit-mask-image:url('" + EMBED + "world-dots-us-m.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots-us-m.svg?v=" + BUILD + "')}",
+      "  .bs-hm-in{-webkit-mask-image:url('" + EMBED + "world-dots-in-m.svg?v=" + BUILD + "');mask-image:url('" + EMBED + "world-dots-in-m.svg?v=" + BUILD + "')}",
+      "  .bs-hm-label,.bs-hm-stem{display:block}",
+      "  .bs-hm-label{font-size:34px;letter-spacing:5px}",
+      "  .bs-hm-sub{display:none}",
+      "  .bs-hm-ring{stroke-width:3}",
+      "  .bs-hm-stem{stroke-width:2.4}",
+      "  .bs-hm-arc{stroke-width:2.6;stroke-dasharray:9 14}",
+      "}",
+      "@media(prefers-reduced-motion:reduce){",
+      "  .bs-hm-c,.bs-hm-pin,.bs-hm-arcwrap{animation-duration:.01s!important;animation-delay:0s!important;opacity:1!important;transform:none!important}",
+      "  .bs-hm-ring,.bs-hm-arc{animation:none!important}",
+      "  .bs-hm-frame{transition:none!important}",
+      "}",
     ].join("\n");
     var style = document.createElement("style");
     style.id = "bs-patch-styles";
@@ -678,7 +767,213 @@
     return null;
   }
 
+  /* ----------------------------------------------------------- hero map bg */
+
+  /**
+   * 19 — the hero gets a dot-matrix world map behind the headline, with the
+   * three markets the studio works in (Canada, USA, India) lighting up in
+   * sequence and their pins popping in. Two dot densities are shipped (wide +
+   * phone) so the dots never turn to mush on a small screen. Everything is
+   * SVG masks + CSS, no library, and it sits at z-index 0 under their content.
+   */
+  var HERO_PINS = [
+    { cls: "p1", x: 319.5, y: 124.5, label: "CANADA", sub: "KITCHENER", up: true },
+    { cls: "p2", x: 295.6, y: 195.6, label: "USA", sub: "COAST TO COAST", up: false },
+    { cls: "p3", x: 858.4, y: 257.6, label: "INDIA", sub: "MOHALI STUDIO", up: true }
+  ];
+
+  function heroPinsSvg() {
+    var parts = [
+      '<svg class="bs-hm-pins" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">',
+      '<g class="bs-hm-arcwrap">',
+      '<path class="bs-hm-arc" d="M319.5 124.5 Q 246 156 295.6 195.6"/>',
+      '<path class="bs-hm-arc" d="M295.6 195.6 Q 577 104 858.4 257.6"/>',
+      "</g>"
+    ];
+    HERO_PINS.forEach(function (p) {
+      var dir = p.up ? -1 : 1;
+      var stemEnd = p.y + dir * 26;
+      var labelY = p.y + dir * (p.up ? 36 : 42);
+      var subY = labelY + (p.up ? -18 : 18);
+      parts.push(
+        '<g class="bs-hm-pin ' + p.cls + '">',
+        '<circle class="bs-hm-ring" cx="' + p.x + '" cy="' + p.y + '" r="7"/>',
+        '<circle class="bs-hm-core" cx="' + p.x + '" cy="' + p.y + '" r="3.6"/>',
+        '<line class="bs-hm-stem" x1="' + p.x + '" y1="' + (p.y + dir * 8) + '" x2="' + p.x + '" y2="' + stemEnd + '"/>',
+        '<text class="bs-hm-label" x="' + p.x + '" y="' + labelY + '" text-anchor="middle">' + p.label + "</text>",
+        '<text class="bs-hm-sub" x="' + p.x + '" y="' + subY + '" text-anchor="middle">' + p.sub + "</text>",
+        "</g>"
+      );
+    });
+    parts.push("</svg>");
+    return parts.join("");
+  }
+
+  /**
+   * The country names used to sit on the map itself, where the display headline
+   * ran straight through them. They live in the hero copy now — one legible row
+   * above the eyebrow — and the map is left as a quiet backdrop.
+   */
+  function addMapKey(hero) {
+    var shell = hero.querySelector(".shell");
+    if (!shell) return;
+    if (shell.querySelector("[data-bs-mapkey]")) return;
+
+    var key = document.createElement("p");
+    key.setAttribute("data-bs-mapkey", "");
+    key.innerHTML =
+      '<span class="bs-mk-lead">Projects across</span>' +
+      '<span class="bs-mk-item k1"><i></i>Canada</span>' +
+      '<span class="bs-mk-item k2"><i></i>USA</span>' +
+      '<span class="bs-mk-item k3"><i></i>India</span>';
+
+    /* sits directly under the display headline */
+    var head = shell.querySelector("h1");
+    if (head && head.parentNode) {
+      head.parentNode.insertBefore(key, head.nextSibling);
+      return;
+    }
+    var eyebrow = shell.querySelector(".eyebrow");
+    if (eyebrow && eyebrow.parentNode) {
+      eyebrow.parentNode.insertBefore(key, eyebrow.nextSibling);
+    } else {
+      shell.insertBefore(key, shell.firstChild);
+    }
+  }
+
+  function patchHeroMap() {
+    var hero = document.querySelector("section#top") || document.querySelector("#top");
+    if (!hero) return false;
+
+    var live = hero.querySelector("[data-bs-heromap]");
+    if (live && live.isConnected) return true;
+
+    var layer = document.createElement("div");
+    layer.setAttribute("data-bs-heromap", "");
+    layer.innerHTML =
+      '<div class="bs-hm-frame">' +
+      '<div class="bs-hm-layer bs-hm-dots"></div>' +
+      '<div class="bs-hm-layer bs-hm-c bs-hm-ca"></div>' +
+      '<div class="bs-hm-layer bs-hm-c bs-hm-us"></div>' +
+      '<div class="bs-hm-layer bs-hm-c bs-hm-in"></div>' +
+      heroPinsSvg() +
+      "</div>";
+
+    hero.insertBefore(layer, hero.firstChild);
+    addMapKey(hero);
+    requestAnimationFrame(function () {
+      layer.classList.add("is-in");
+    });
+
+    /* pointer parallax — desktop only, and never against reduced-motion */
+    var frame = layer.querySelector(".bs-hm-frame");
+    var reduce =
+      window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (frame && !reduce && window.matchMedia("(min-width:768px)").matches) {
+      window.addEventListener(
+        "pointermove",
+        function (event) {
+          var w = window.innerWidth || 1;
+          var h = window.innerHeight || 1;
+          var dx = (event.clientX / w - 0.5) * 26;
+          var dy = (event.clientY / h - 0.5) * 16;
+          frame.style.setProperty("--hmx", dx.toFixed(1) + "px");
+          frame.style.setProperty("--hmy", dy.toFixed(1) + "px");
+        },
+        { passive: true }
+      );
+    }
+    return true;
+  }
+
   /* ------------------------------------------------------- work lead visual */
+
+  /**
+   * EXPLORE PROJECT panel under the hero. Shows the same live sales experiences
+   * as the "sales experience" capability card, but with Cosmos Quesnel first
+   * because that is the project named beside the film.
+   */
+  function leadLinkItems() {
+    var svc = SERVICE_DETAIL["sales experience"] || {};
+    var items = (svc.items || []).filter(function (item) {
+      return item !== COSMOS_LINK && item.url !== COSMOS_LINK.url;
+    });
+    return [COSMOS_LINK].concat(items);
+  }
+
+  function closeLeadLinks() {
+    var open = document.querySelectorAll(".bs-leadlinks");
+    for (var i = 0; i < open.length; i++) {
+      (function (node) {
+        node.classList.remove("is-open");
+        setTimeout(function () {
+          if (node.parentNode) node.parentNode.removeChild(node);
+        }, 280);
+      })(open[i]);
+    }
+  }
+
+  function openLeadLinks(title) {
+    closeLeadLinks();
+
+    var modal = document.createElement("div");
+    modal.className = "bs-leadlinks";
+
+    var panel = document.createElement("div");
+    panel.className = "bs-leadlinks-panel";
+
+    var close = document.createElement("button");
+    close.type = "button";
+    close.className = "bs-leadlinks-close";
+    close.textContent = "CLOSE ✕";
+    panel.appendChild(close);
+
+    var eyebrow = document.createElement("span");
+    eyebrow.className = "bs-leadlinks-eyebrow";
+    eyebrow.textContent = "Live sales experiences";
+    panel.appendChild(eyebrow);
+
+    var head = document.createElement("h4");
+    head.className = "bs-leadlinks-title";
+    head.textContent = title || "Explore project";
+    panel.appendChild(head);
+
+    leadLinkItems().forEach(function (item) {
+      var a = document.createElement("a");
+      a.className = "bs-leadlink";
+      a.href = item.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      var b = document.createElement("b");
+      b.textContent = item.label;
+      var url = document.createElement("span");
+      url.textContent = item.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+      var go = document.createElement("em");
+      go.textContent = "OPEN SITE →";
+      a.appendChild(b);
+      a.appendChild(url);
+      a.appendChild(go);
+      panel.appendChild(a);
+    });
+
+    modal.appendChild(panel);
+    document.body.appendChild(modal);
+
+    close.addEventListener("click", closeLeadLinks);
+    modal.addEventListener("click", function (event) {
+      if (event.target === modal) closeLeadLinks();
+    });
+    document.addEventListener("keydown", function onKey(event) {
+      if (event.key === "Escape") {
+        closeLeadLinks();
+        document.removeEventListener("keydown", onKey);
+      }
+    });
+
+    requestAnimationFrame(function () {
+      modal.classList.add("is-open");
+    });
+  }
 
   function leadVideo(poster) {
     var video = document.createElement("video");
@@ -770,13 +1065,20 @@
     desc.textContent = LEAD_COPY.desc;
     copy.appendChild(desc);
 
-    var cta = document.createElement("a");
+    /* EXPLORE PROJECT opens the same live sales experiences as the
+       "sales experience" card, with Cosmos Quesnel first because it is the
+       project called out beside this film. */
+    var cta = document.createElement("button");
+    cta.type = "button";
     cta.className = "bs-lead-cta";
-    cta.href = LEAD_COPY.href;
     cta.textContent = LEAD_COPY.cta;
     var arrow = document.createElement("i");
     arrow.textContent = "→";
     cta.appendChild(arrow);
+    cta.addEventListener("click", function (event) {
+      event.preventDefault();
+      openLeadLinks(title || "Live sales experiences");
+    });
     copy.appendChild(cta);
 
     block.appendChild(media);
@@ -1359,6 +1661,7 @@
   var didHeroWord = false;
   var didWorkMobile = false;
   var didServices = false;
+  var didHeroMap = false;
   var didWork = false;
   var didStudio = false;
   var didNav = false;
@@ -1377,6 +1680,7 @@
         didServices = true;
       }
     }
+    if (!didHeroMap) didHeroMap = patchHeroMap();
     if (!didWork) didWork = patchWorkLead();
     if (!didHeroWord) didHeroWord = patchHeroWord();
     if (!didWorkMobile) didWorkMobile = patchWorkMobile();
