@@ -1739,12 +1739,12 @@
    * tile instead of a broken image, so the section always looks finished.
    */
   var TEAM = [
-    { name: "Aarav Mehta", role: "Founder & Creative Director", photo: "member-01.jpg" },
-    { name: "Ishita Raghav", role: "Head of Visualization", photo: "member-02.jpg" },
-    { name: "Kabir Sethi", role: "3D Animation Lead", photo: "member-03.jpg" },
-    { name: "Meera Kapoor", role: "Interactive Web Lead", photo: "member-04.jpg" },
-    { name: "Rohan Vaidya", role: "Performance Marketing", photo: "member-05.jpg" },
-    { name: "Sana Qureshi", role: "Client Experience", photo: "member-06.jpg" }
+    { name: "Himanshu Gupta", role: "Co-Founder (CAD-USA)", photo: "member-01.jpg" },
+    { name: "Punnet Goyal", role: "Co-Founder", photo: "member-02.jpg" },
+    { name: "Manik Aggarwal", role: "Co-Founder", photo: "member-03.jpg" },
+    { name: "Amanpreet Singh Panesar", role: "COO", photo: "member-04.jpg" },
+    { name: "Bhuvesh Negi", role: "3D-Artist", photo: "member-05.jpg" },
+    { name: "Anshpreet Singh Gujral", role: "UI/UX Designer", photo: "member-06.jpg" }
   ];
 
   var TEAM_COPY = {
