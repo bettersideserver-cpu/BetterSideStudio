@@ -1742,9 +1742,9 @@
     { name: "Himanshu Gupta", role: "Co-Founder (CAD-USA)", photo: "member-01.jpg" },
     { name: "Punnet Goyal", role: "Co-Founder", photo: "member-02.jpg" },
     { name: "Manik Aggarwal", role: "Co-Founder", photo: "member-03.jpg" },
-    { name: "Amanpreet Singh Panesar", role: "COO", photo: "member-04.jpg" },
+    { name: "Amanpreet Singh Panesar", role: "COO (Chief Operating Officer)", photo: "member-04.jpg" },
     { name: "Bhuvesh Negi", role: "3D-Artist", photo: "member-05.jpg" },
-    { name: "Anshpreet Singh Gujral", role: "UI/UX Designer", photo: "member-06.jpg" }
+    { name: "Anshpreet Singh Gujral", role: "Web Developer", photo: "member-06.jpg" }
   ];
 
   var TEAM_COPY = {
