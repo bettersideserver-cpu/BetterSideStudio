@@ -36,6 +36,42 @@
   var COSMOS_LINK = { label: "Cosmos Quesnel", url: "https://www.cosmosquesnel.ca/" };
 
   /**
+   * ===========================================================================
+   * CLIENT LOGO SIZES — edit these numbers, nothing else.
+   * ===========================================================================
+   * Home page, "THE CLIENT LIST" section. The key is the image filename in
+   * images/clients/ (without ".png"); the value is the logo's height cap in px.
+   *
+   * Every source file is 200px tall, so anything up to ~200 stays sharp.
+   * The values below are what the original build shipped — they look uneven
+   * because they were tuned by eye: a wide wordmark like `nivasa` needs a far
+   * smaller height than a square badge like `fomerah-greens` to look the same
+   * visual weight. Raise them all proportionally to keep that balance.
+   *
+   * Set a value to 0 to leave that logo exactly as the build had it.
+   */
+  var LOGO_SIZES = {
+    "aipl": 71,
+    "omaxe": 74,
+    "umberra": 73,
+    "magique": 64,
+    "fomerah-greens": 85,
+    "sun-view": 62,
+    "nivasa": 85,
+    "dream-height": 80
+  };
+
+  /**
+   * Height of the box each logo sits in. The build ships 132px on phones and
+   * 168px from 768px up, and a logo can never render taller than its cell
+   * minus padding — so if you push the numbers above past ~150, raise this too
+   * or the logos will just stop growing.
+   *
+   * Set either to 0 to keep the built-in height.
+   */
+  var LOGO_CELL_H = { mobile: 0, desktop: 0 };
+
+  /**
    * What opens when a capability card in the services section is clicked.
    * Keys are matched against the card heading, lowercased. Only the services
    * listed here become clickable; the rest behave exactly as before.
@@ -256,6 +292,32 @@
     for (var i = 0; i < frames.length; i++) styleFrame(frames[i]);
   }
 
+  /**
+   * Turns LOGO_SIZES / LOGO_CELL_H into CSS. Each logo is matched on its file
+   * name, because the markup sizes them with per-logo utility classes baked
+   * into the minified bundle that can't be edited at source.
+   */
+  function logoSizeCss() {
+    var out = [];
+    for (var key in LOGO_SIZES) {
+      if (!Object.prototype.hasOwnProperty.call(LOGO_SIZES, key)) continue;
+      var px = LOGO_SIZES[key];
+      if (!px) continue;
+      out.push(
+        '.client-cell img[src*="' + key + '"]{max-height:' + px + "px!important;height:auto!important}"
+      );
+    }
+    if (LOGO_CELL_H.mobile) {
+      out.push(".client-cell{height:" + LOGO_CELL_H.mobile + "px!important}");
+    }
+    if (LOGO_CELL_H.desktop) {
+      out.push(
+        "@media(min-width:768px){.client-cell{height:" + LOGO_CELL_H.desktop + "px!important}}"
+      );
+    }
+    return out.join("\n");
+  }
+
   function injectStyles() {
     if (document.getElementById("bs-patch-styles")) return;
     var css = [
@@ -384,6 +446,15 @@
       "  .bs-hm-stem{stroke-width:2.4}",
       "  .bs-hm-arc{stroke-width:2.6;stroke-dasharray:9 14}",
       "}",
+      /* 19 — client list: full-colour logos, no hover state.
+         The build ships `.client-logo{filter:var(--logo-mono);opacity:var(--logo-dim)}`,
+         which flattens every mark to a mono silhouette (and turns the logos that
+         have an opaque background into solid blocks). Drop the filter and the
+         dimming so each logo shows as supplied, at rest and on hover alike. */
+      ".client-logo{filter:none!important;opacity:1!important;transform:none!important}",
+      ".client-cell:hover .client-logo{filter:none!important;opacity:1!important;transform:none!important}",
+      /* 20 — per-logo heights, driven by LOGO_SIZES / LOGO_CELL_H at the top */
+      logoSizeCss(),
       "@media(prefers-reduced-motion:reduce){",
       "  .bs-hm-c,.bs-hm-pin,.bs-hm-arcwrap{animation-duration:.01s!important;animation-delay:0s!important;opacity:1!important;transform:none!important}",
       "  .bs-hm-ring,.bs-hm-arc{animation:none!important}",
@@ -1656,6 +1727,254 @@
     return true;
   }
 
+  /* -------------------------------------------------------------- about team */
+
+  /**
+   * The six people on the About page.
+   *
+   * TO EDIT: change the name / role strings below. Photos are read from
+   *   images/team/member-01.jpg … member-06.jpg   (site root, next to images/work/)
+   * Drop your own files in with those exact names — portrait crops, ideally
+   * 4:5 and at least 900x1125. Until a file exists the card shows a monogram
+   * tile instead of a broken image, so the section always looks finished.
+   */
+  var TEAM = [
+    { name: "Aarav Mehta", role: "Founder & Creative Director", photo: "member-01.jpg" },
+    { name: "Ishita Raghav", role: "Head of Visualization", photo: "member-02.jpg" },
+    { name: "Kabir Sethi", role: "3D Animation Lead", photo: "member-03.jpg" },
+    { name: "Meera Kapoor", role: "Interactive Web Lead", photo: "member-04.jpg" },
+    { name: "Rohan Vaidya", role: "Performance Marketing", photo: "member-05.jpg" },
+    { name: "Sana Qureshi", role: "Client Experience", photo: "member-06.jpg" }
+  ];
+
+  var TEAM_COPY = {
+    eyebrow: "The people",
+    title: ["Six people,", "one standard."],
+    lead:
+      "No account layers, no hand-offs to a third party. The people who pitch the work are the people who build it."
+  };
+
+  var TEAM_CSS = [
+    ".bs-team{padding:5rem 1.5rem;border-top:1px solid var(--hair,rgba(255,255,255,.14))}",
+    "@media(min-width:768px){.bs-team{padding:6.5rem 3rem}}",
+    ".bs-team-in{margin:0 auto;max-width:1600px}",
+    '.bs-team-eyebrow{font-family:var(--font-body,"Satoshi",system-ui,sans-serif);display:block;margin:0 auto;max-width:1180px;font-size:11px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--flare,var(--flame,#ff5a1f))}',
+    ".bs-team-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem;margin:1.75rem auto 0;max-width:1180px}",
+    '.bs-team-h2{font-family:var(--font-display,"Clash Display",system-ui,sans-serif);margin:0;max-width:18ch;font-size:clamp(2.2rem,5vw,4.4rem);line-height:.86;font-weight:900;letter-spacing:-.03em;text-transform:uppercase;color:var(--bone,#fff)}',
+    ".bs-team-h2 span{display:block}",
+    ".bs-team-h2 span+span{color:var(--flare,var(--flame,#ff5a1f))}",
+    '.bs-team-lead{font-family:var(--font-body,"Satoshi",system-ui,sans-serif);margin:0;max-width:36ch;font-size:.875rem;font-weight:300;line-height:1.7;color:var(--bone-dim,var(--ash,#a3a3a3))}',
+    ".bs-team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin:3rem auto 0;max-width:1180px;background:var(--hair,rgba(255,255,255,.14));border:1px solid var(--hair,rgba(255,255,255,.14))}",
+    "@media(max-width:479px){.bs-team-grid{grid-template-columns:repeat(1,minmax(0,1fr))}}",
+    "@media(min-width:1024px){.bs-team-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}",
+    ".bs-team-card{position:relative;display:block;background:var(--ink,#0b0b0b);overflow:hidden}",
+    /* the card itself stays opaque so the hairline grid never flashes through */
+    ".bs-team-card>*{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}",
+    ".bs-team-card.is-in>*{opacity:1;transform:none}",
+    ".bs-team-card.is-in>.bs-team-body{transition-delay:.12s}",
+    /* width:100% keeps the ratio from deriving a narrower box off the height cap */
+    ".bs-team-media{position:relative;overflow:hidden;width:100%;aspect-ratio:4/5;max-height:390px;background:var(--ink-raise,var(--ink-2,#141414))}",
+    /* the photo stays black and white at all times — only the motion reacts to hover */
+    ".bs-team-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.05);transform:scale(1.01);transition:opacity .6s ease,transform .9s cubic-bezier(.16,1,.3,1)}",
+    ".bs-team-card:hover .bs-team-img{transform:scale(1.05)}",
+    /* monogram stand-in, used until a real photo file exists */
+    ".bs-team-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 100% at 50% 35%,var(--ink-raise,#141414) 0%,var(--ink,#0b0b0b) 80%)}",
+    ".bs-team-fallback{flex-direction:column;gap:1rem}",
+    ".bs-team-figure{width:44%;max-width:150px;color:var(--bone,#fff);opacity:.16}",
+    '.bs-team-fallback span{display:flex;align-items:center;justify-content:center;width:2.75rem;height:2.75rem;border:1px solid var(--hair,rgba(255,255,255,.18));border-radius:999px;font-family:var(--font-body,"Satoshi",system-ui,sans-serif);font-size:.6875rem;font-weight:500;letter-spacing:.14em;line-height:1;color:var(--bone-dim,var(--ash,#a3a3a3))}',
+    /* built from the theme ink only, so it reads clean in DK and LT alike */
+    ".bs-team-veil{position:absolute;inset:0;background:linear-gradient(to top,var(--ink,#0b0b0b) 0%,transparent 62%);opacity:.8;transition:opacity .6s ease;pointer-events:none}",
+    ".bs-team-card:hover .bs-team-veil{opacity:.6}",
+    '.bs-team-no{position:absolute;top:1rem;right:1.25rem;font-family:var(--font-body,"Satoshi",system-ui,sans-serif);font-size:10px;letter-spacing:.22em;color:var(--bone,#fff);opacity:.45;font-variant-numeric:tabular-nums}',
+    ".bs-team-body{padding:1.35rem 1.35rem 1.6rem}",
+    '.bs-team-name{font-family:var(--font-display,"Clash Display",system-ui,sans-serif);margin:0;font-size:clamp(1.15rem,1.6vw,1.5rem);font-weight:900;line-height:1;letter-spacing:-.02em;text-transform:uppercase;color:var(--bone,#fff)}',
+    ".bs-team-rule{height:1px;width:2rem;margin:.9rem 0;background:var(--flare,var(--flame,#ff5a1f));transform-origin:left;transition:width .6s cubic-bezier(.16,1,.3,1)}",
+    ".bs-team-card:hover .bs-team-rule{width:4.5rem}",
+    '.bs-team-role{font-family:var(--font-body,"Satoshi",system-ui,sans-serif);margin:0;font-size:10.5px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-dim,var(--ash,#a3a3a3));transition:color .5s ease}',
+    ".bs-team-card:hover .bs-team-role{color:var(--flare,var(--flame,#ff5a1f))}",
+    '.bs-team-note{font-family:var(--font-body,"Satoshi",system-ui,sans-serif);margin:1.75rem 0 0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim,var(--ash,#a3a3a3));opacity:.7}',
+    "@media(prefers-reduced-motion:reduce){.bs-team-card>*{opacity:1;transform:none}}"
+  ].join("");
+
+  function teamStyles() {
+    if (document.getElementById("bs-team-css")) return;
+    var tag = document.createElement("style");
+    tag.id = "bs-team-css";
+    tag.textContent = TEAM_CSS;
+    document.head.appendChild(tag);
+  }
+
+  function initials(name) {
+    return name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(function (part) {
+        return part.charAt(0);
+      })
+      .join("")
+      .toUpperCase();
+  }
+
+  function teamCard(person, index) {
+    var card = document.createElement("article");
+    card.className = "bs-team-card";
+
+    var media = document.createElement("div");
+    media.className = "bs-team-media";
+
+    var fallback = document.createElement("div");
+    fallback.className = "bs-team-fallback";
+    /* A head-and-shoulders mark so an empty slot still reads as a portrait. */
+    fallback.innerHTML =
+      '<svg class="bs-team-figure" viewBox="0 0 100 120" aria-hidden="true" fill="none" ' +
+      'stroke="currentColor" stroke-width="3">' +
+      '<circle cx="50" cy="38" r="21"/>' +
+      '<path d="M8 118c0-23.2 18.8-42 42-42s42 18.8 42 42"/>' +
+      "</svg>";
+    var mono = document.createElement("span");
+    mono.textContent = initials(person.name);
+    fallback.appendChild(mono);
+    media.appendChild(fallback);
+
+    var img = document.createElement("img");
+    img.className = "bs-team-img";
+    img.alt = person.name + " — " + person.role;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.style.opacity = "0";
+    img.addEventListener("load", function () {
+      img.style.opacity = "1";
+      fallback.style.display = "none";
+    });
+    /* No file yet: keep the monogram, drop the broken image. */
+    img.addEventListener("error", function () {
+      if (img.parentNode) img.parentNode.removeChild(img);
+    });
+    img.src = ROOT + "images/team/" + person.photo;
+    media.appendChild(img);
+
+    var veil = document.createElement("div");
+    veil.className = "bs-team-veil";
+    media.appendChild(veil);
+
+    var no = document.createElement("span");
+    no.className = "bs-team-no";
+    no.textContent = index < 9 ? "0" + (index + 1) : String(index + 1);
+    media.appendChild(no);
+
+    var body = document.createElement("div");
+    body.className = "bs-team-body";
+    var name = document.createElement("h3");
+    name.className = "bs-team-name";
+    name.textContent = person.name;
+    var rule = document.createElement("div");
+    rule.className = "bs-team-rule";
+    var role = document.createElement("p");
+    role.className = "bs-team-role";
+    role.textContent = person.role;
+    body.appendChild(name);
+    body.appendChild(rule);
+    body.appendChild(role);
+
+    card.appendChild(media);
+    card.appendChild(body);
+    return card;
+  }
+
+  /**
+   * Adds the team grid to the About page, just above the closing
+   * "If it is not selling, it is decoration." call to action. The About page is
+   * a compiled bundle, so the section is built here in the DOM — same approach
+   * as every other patch in this file.
+   */
+  function patchAboutTeam() {
+    if (!/\/about\/?$/.test(window.location.pathname.replace(/index\.html$/, ""))) return false;
+    var main = document.querySelector("main");
+    if (!main) return false;
+
+    var live = document.querySelector('[data-bs-injected="team"]');
+    if (live && live.isConnected) return true;
+
+    teamStyles();
+
+    var section = document.createElement("section");
+    section.className = "bs-team";
+    section.setAttribute("data-bs-injected", "team");
+
+    var inner = document.createElement("div");
+    inner.className = "bs-team-in";
+
+    var eyebrow = document.createElement("span");
+    eyebrow.className = "bs-team-eyebrow";
+    eyebrow.textContent = TEAM_COPY.eyebrow;
+
+    var head = document.createElement("div");
+    head.className = "bs-team-head";
+    var h2 = document.createElement("h2");
+    h2.className = "bs-team-h2";
+    TEAM_COPY.title.forEach(function (line) {
+      var span = document.createElement("span");
+      span.textContent = line;
+      h2.appendChild(span);
+    });
+    var lead = document.createElement("p");
+    lead.className = "bs-team-lead";
+    lead.textContent = TEAM_COPY.lead;
+    head.appendChild(h2);
+    head.appendChild(lead);
+
+    var grid = document.createElement("div");
+    grid.className = "bs-team-grid";
+    TEAM.forEach(function (person, i) {
+      grid.appendChild(teamCard(person, i));
+    });
+
+    inner.appendChild(eyebrow);
+    inner.appendChild(head);
+    inner.appendChild(grid);
+    section.appendChild(inner);
+
+    /* Sit above the closing CTA when it is there, otherwise at the end of main. */
+    var anchor = null;
+    var kids = [].slice.call(main.children);
+    for (var i = 0; i < kids.length; i++) {
+      var text = (kids[i].textContent || "").toUpperCase();
+      if (text.indexOf("NOT SELLING") !== -1 && text.indexOf("DECORATION") !== -1) {
+        anchor = kids[i];
+        break;
+      }
+    }
+    if (anchor) main.insertBefore(section, anchor);
+    else main.appendChild(section);
+
+    /* Cards rise in as the section arrives. */
+    var cards = [].slice.call(grid.children);
+    if (typeof IntersectionObserver === "function") {
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            var node = entry.target;
+            var idx = cards.indexOf(node);
+            setTimeout(function () {
+              node.classList.add("is-in");
+            }, Math.max(0, idx % 3) * 90);
+            observer.unobserve(node);
+          });
+        },
+        { rootMargin: "0px 0px -12% 0px", threshold: 0.15 }
+      );
+      cards.forEach(function (node) {
+        observer.observe(node);
+      });
+    } else {
+      cards.forEach(function (node) {
+        node.classList.add("is-in");
+      });
+    }
+    return true;
+  }
+
   /* ------------------------------------------------------------------- boot */
 
   var didHeroWord = false;
@@ -1666,6 +1985,7 @@
   var didStudio = false;
   var didNav = false;
   var didRibbon = false;
+  var didTeam = false;
 
   var ticking = false;
 
@@ -1686,6 +2006,7 @@
     if (!didWorkMobile) didWorkMobile = patchWorkMobile();
     if (!didStudio) didStudio = patchStudio();
     if (!didRibbon) didRibbon = patchRibbon();
+    if (!didTeam) didTeam = patchAboutTeam();
     if (!didNav) didNav = patchNav();
     patchLinks();
     patchToggle(document);
@@ -1693,7 +2014,9 @@
     styleFrames();
 
     var onStudio = /\/studio\/?$/.test(window.location.pathname);
-    var complete = didNav && (onStudio ? didStudio : didServices && didWork);
+    var onAboutPage = /\/about\/?$/.test(window.location.pathname.replace(/index\.html$/, ""));
+    var complete =
+      didNav && (onStudio ? didStudio : onAboutPage ? didTeam : didServices && didWork);
     if (complete || Date.now() - started > MAX_WAIT_MS) {
       ticking = false;
       return;
@@ -1717,6 +2040,7 @@
     didStudio = false;
     didNav = false;
     didRibbon = false;
+    didTeam = false;
     started = Date.now();
     if (!ticking) tick();
   }
@@ -1772,7 +2096,9 @@
           ? !document.querySelector('[data-bs-injected="studio"]')
           : !document.querySelector('[data-bs-injected="services"]');
         var navGone = !document.querySelector('header nav a[data-bs-added="1"]');
-        if (missing || navGone) restart();
+        var onAbout = /\/about\/?$/.test(window.location.pathname.replace(/index\.html$/, ""));
+        var teamGone = onAbout && !document.querySelector('[data-bs-injected="team"]');
+        if (missing || navGone || teamGone) restart();
       }, 150);
     });
     observer.observe(document.body, { childList: true, subtree: true });
